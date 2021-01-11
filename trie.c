@@ -89,10 +89,7 @@ void printWords1(Node *p, char *hold, int s)
 void printWords2(Node *p, char *hold, int s)
 {
     int i = 0;
-    if (p == NULL)
-    {
-        return;
-    }
+    if (p == NULL) return;
     for (i = NUM_LETTERS-1; i >=0; i--)
     {
         hold[s] = i+'a';
@@ -173,13 +170,8 @@ int main(int argc, char *argv[])
             printf("not enouph memory");
             exit(1);
         }
-        if(argc==1){
-            printWords1(root, tmp, 0);
-        }
-        else
-        {
-            printWords2(root, tmp, 0);
-        }
+        if(argc==1) printWords1(root, tmp, 0);
+        else printWords2(root, tmp, 0);
         freeTree(root);
         free(tmp);
     }
