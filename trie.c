@@ -107,7 +107,7 @@ char *getWord()
     int i = 0, size = WORD_LEN, sigh = 1;
     char ch, *tmp2 = (char *)malloc(WORD_LEN);
     ch = getchar();
-    while ((ch != '\n') && (ch != ' '))
+    while ((ch != '\n') && (ch != ' ')&& (ch != '\t'))
     {
         if ((int)ch == EOF)
         {
@@ -116,15 +116,14 @@ char *getWord()
         }
         while ((ch < 'A') || (('Z' < ch) && (ch < 'a')) || ('z' < ch))
         {
-            if ((ch == '\n') || (ch == ' ') || ((int)ch == EOF))
+            if ((ch == '\n') || (ch == ' ') || (ch != '\t') || ((int)ch == EOF))
             {
                 sigh = 0;
                 break;
             }
             ch = getchar();
         }
-        if (!sigh)
-            break;
+        if (!sigh) break;
         tmp2[i] = ch;
         i++;
         if (i >= size)
