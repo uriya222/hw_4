@@ -15,6 +15,8 @@ typedef struct Node
     struct Node *children[NUM_LETTERS];
 } Node;
 
+void freeTree(Node *p);
+
 Node *initNode(char letter)
 {
     Node *pNode = NULL;
@@ -30,7 +32,7 @@ Node *initNode(char letter)
     else
     {
         printf("not enouph memory");
-        exit(1);
+        return NULL;
     }
     return pNode;
 }
@@ -49,6 +51,11 @@ void insert(Node *root, const char *word)
         if (!p->children[index])
         {
             p->children[index] = initNode(word[i]);
+            if (!p->children[index])
+            {
+                freeTree(root);
+                exit(1);
+            }
         }
         p = p->children[index];
     }
@@ -89,10 +96,11 @@ void printWords1(Node *p, char *hold, int s)
 void printWords2(Node *p, char *hold, int s)
 {
     int i = 0;
-    if (p == NULL) return;
-    for (i = NUM_LETTERS-1; i >=0; i--)
+    if (p == NULL)
+        return;
+    for (i = NUM_LETTERS - 1; i >= 0; i--)
     {
-        hold[s] = i+'a';
+        hold[s] = i + 'a';
         printWords2(p->children[i], hold, s + 1);
     }
     if (p->count)
@@ -106,8 +114,13 @@ char *getWord()
 {
     int i = 0, size = WORD_LEN, sigh = 1;
     char ch, *tmp2 = (char *)malloc(WORD_LEN);
+    if (!tmp2)
+    {
+        printf("not enouph memory\n");
+        return NULL;
+    }
     ch = getchar();
-    while ((ch != '\n') && (ch != ' ')&& (ch != '\t'))
+    while ((ch != '\n') && (ch != ' ') && (ch != '\t'))
     {
         if ((int)ch == EOF)
         {
@@ -123,12 +136,19 @@ char *getWord()
             }
             ch = getchar();
         }
-        if (!sigh) break;
+        if (!sigh)
+            break;
         tmp2[i] = ch;
         i++;
         if (i >= size)
         {
             tmp2 = (char *)realloc(tmp2, i + WORD_LEN);
+            if (!tmp2)
+            {
+                printf("not enouph memory\n");
+                return NULL;
+            }
+
             size += WORD_LEN;
         }
         ch = getchar();
@@ -136,28 +156,37 @@ char *getWord()
     *(tmp2 + i) = '\0';
     return tmp2;
 }
-void Lower(char* w,size_t len){
-   size_t i;
-   for(i=0;i<len;i++){
-      w[i] = tolower(w[i]);
-   }
+void Lower(char *w, size_t len)
+{
+    size_t i;
+    for (i = 0; i < len; i++)
+    {
+        w[i] = tolower(w[i]);
+    }
 }
 int main(int argc, char *argv[])
 {
-    if ((argc == 2 && argv[1][0] == 'r' && strlen(argv[1]) == 1)||(argc==1))
+    if ((argc == 2 && argv[1][0] == 'r' && strlen(argv[1]) == 1) || (argc == 1))
     {
         size_t max_len = 0, w_len;
         Node *root = initNode(' ');
+        if (!root)
+            exit(1);
         while (flag)
         {
             char *word = getWord();
+            if (!word)
+            {
+                freeTree(root);
+                exit(1);
+            }
             w_len = strlen(word);
             if (max_len < w_len)
             {
                 max_len = w_len;
             }
-            Lower(word,strlen(word));
-            if (strcmp(word,"\0"))
+            Lower(word, strlen(word));
+            if (strcmp(word, "\0"))
             {
                 insert(root, word);
             }
@@ -167,10 +196,13 @@ int main(int argc, char *argv[])
         if (!tmp)
         {
             printf("not enouph memory");
+            freeTree(root);
             exit(1);
         }
-        if(argc==1) printWords1(root, tmp, 0);
-        else printWords2(root, tmp, 0);
+        if (argc == 1)
+            printWords1(root, tmp, 0);
+        else
+            printWords2(root, tmp, 0);
         freeTree(root);
         free(tmp);
     }
